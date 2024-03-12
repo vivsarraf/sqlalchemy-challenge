@@ -22,9 +22,9 @@ This part of the project surfaces several SQLAlchemy precipitation and temperatu
     - Active weather stations
 - /api/v1.0/tobs
     - Daily temperature observations for the WAIHEE weather station
-- /api/v1.0/trip/yyyy-mm-dd
-    - Min, average & max temperatures for the range beginning with the provided start date through 08/23/17
-- /api/v1.0/trip/yyyy-mm-dd/yyyy-mm-dd
+- /api/v1.0/start
+    - Min, average & max temperatures for the range beginning with the provided start date 
+- /api/v1.0/start/end
     - Min, average & max temperatures for the range beginning with the provided start - end date range
 
 It consists of:
