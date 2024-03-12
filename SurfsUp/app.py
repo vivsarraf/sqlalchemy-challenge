@@ -55,19 +55,19 @@ def precipitation():
 
     """Return a list of precipitation (prcp)and date (date) data"""
     
-    # Create new variable to store results from query to Measurement table for prcp and date columns
-    precipitation_query_results = session.query(Measurement.prcp, Measurement.date).all()
+    # Create variable to store results from query to Measurement table for prcp and date columns
+    precipitation_results = session.query(Measurement.prcp, Measurement.date).all()
 
     # Close session
     session.close()
-    precipitaton_query_values = []
-    for prcp, date in precipitation_query_results:
+    precipitaton_values = []
+    for prcp, date in precipitation_results:
         precipitation_dict = {}
         precipitation_dict["precipitation"] = prcp
         precipitation_dict["date"] = date
-        precipitaton_query_values.append(precipitation_dict)
+        precipitaton_values.append(precipitation_dict)
 
-    return jsonify(precipitaton_query_values) 
+    return jsonify(precipitaton_values) 
 # Create a route that returns a JSON list of stations from the database
 @app.route("/api/v1.0/stations")
 def station(): 
@@ -75,11 +75,11 @@ def station():
     session = Session(engine)
 
     """Return a list of stations from the database""" 
-    station_query_results = session.query(Station.station,Station.id).all()
+    station_results = session.query(Station.station,Station.id).all()
 
     session.close()  
     stations_values = []
-    for station, id in station_query_results:
+    for station, id in station_results:
         stations_values_dict = {}
         stations_values_dict['station'] = station
         stations_values_dict['id'] = id
@@ -94,24 +94,24 @@ def tobs():
     """Return a list of dates and temps observed for the most active station for the last year of data from the database""" 
     # Create query to find the last date in the database
     
-    last_year_query_results = session.query(Measurement.date).\
+    last_year_results = session.query(Measurement.date).\
         order_by(Measurement.date.desc()).first() 
 
-    print(last_year_query_results)
+    print(last_year_results)
     # last_year_date returns row ('2017-08-23',), use this to create a date time object to find start query date 
     
     # check to see if last year was correctly returned by creating dictionary to return last year value to browser in JSON format
-    last_year_query_values = []
-    for date in last_year_query_results:
+    last_year_values = []
+    for date in last_year_results:
         last_year_dict = {}
         last_year_dict["date"] = date
-        last_year_query_values.append(last_year_dict) 
-    print(last_year_query_values)
+        last_year_values.append(last_year_dict) 
+    print(last_year_values)
     # returns: [{'date': '2017-08-23'}]
 
     # Create query_start_date by finding the difference between date time object of "2017-08-23" - 365 days
-    query_start_date = dt.date(2017, 8, 23)-dt.timedelta(days =365) 
-    print(query_start_date) 
+    start_date = dt.date(2017, 8, 23)-dt.timedelta(days =365) 
+    print(start_date) 
     # returns: 2016-08-23 
 
     # Create query to find most active station in the database 
@@ -128,21 +128,21 @@ def tobs():
 
     # Create a query to find dates and tobs for the most active station (USC00519281) within the last year (> 2016-08-23)
 
-    dates_tobs_last_year_query_results = session.query(Measurement.date, Measurement.tobs, Measurement.station).\
-        filter(Measurement.date > query_start_date).\
+    dates_tobs_last_year_results = session.query(Measurement.date, Measurement.tobs, Measurement.station).\
+        filter(Measurement.date > start_date).\
         filter(Measurement.station == most_active_station) 
     
 
     # Create a list of dates,tobs,and stations that will be appended with dictionary values for date, tobs, and station number queried above
-    dates_tobs_last_year_query_values = []
-    for date, tobs, station in dates_tobs_last_year_query_results:
+    dates_tobs_last_year_values = []
+    for date, tobs, station in dates_tobs_last_year_results:
         dates_tobs_dict = {}
         dates_tobs_dict["date"] = date
         dates_tobs_dict["tobs"] = tobs
         dates_tobs_dict["station"] = station
-        dates_tobs_last_year_query_values.append(dates_tobs_dict)
+        dates_tobs_last_year_values.append(dates_tobs_dict)
         
-    return jsonify(dates_tobs_last_year_query_values) 
+    return jsonify(dates_tobs_last_year_values) 
 
 # Create a route that when given the start date only, returns the minimum, average, and maximum temperature observed for all dates greater than or equal to the start date entered by a user
 
@@ -154,21 +154,21 @@ def start_date(start):
     """Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start date."""
 
     # Create query for minimum, average, and max tobs where query date is greater than or equal to the date the user submits in URL
-    start_date_tobs_results = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).\
+    start_date_results = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).all()
     
     session.close() 
 
     # Create a list of min,max,and average temps that will be appended with dictionary values for min, max, and avg tobs queried above
-    start_date_tobs_values =[]
-    for min, avg, max in start_date_tobs_results:
+    start_date_values =[]
+    for min, avg, max in start_date_results:
         start_date_tobs_dict = {}
         start_date_tobs_dict["min"] = min
         start_date_tobs_dict["average"] = avg
         start_date_tobs_dict["max"] = max
-        start_date_tobs_values.append(start_date_tobs_dict)
+        start_date_values.append(start_date_tobs_dict)
     
-    return jsonify(start_date_tobs_values)
+    return jsonify(start_date_values)
 
 # Create a route that when given the start date only, returns the minimum, average, and maximum temperature observed for all dates greater than or equal to the start date entered by a user
 
@@ -182,23 +182,23 @@ def Start_end_date(start, end):
     
     # Create query for minimum, average, and max tobs where query date is greater than or equal to the start date and less than or equal to end date user submits in URL
 
-    start_end_date_tobs_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    start_end_date_tobs = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).\
         filter(Measurement.date <= end).all()
 
     session.close()
   
     # Create a list of min,max,and average temps that will be appended with dictionary values for min, max, and avg tobs queried above
-    start_end_tobs_date_values = []
-    for min, avg, max in start_end_date_tobs_results:
+    start_end_tobs_date = []
+    for min, avg, max in start_end_date_tobs:
         start_end_tobs_date_dict = {}
         start_end_tobs_date_dict["min_temp"] = min
         start_end_tobs_date_dict["avg_temp"] = avg
         start_end_tobs_date_dict["max_temp"] = max
-        start_end_tobs_date_values.append(start_end_tobs_date_dict) 
+        start_end_tobs_date.append(start_end_tobs_date_dict) 
     
 
-    return jsonify(start_end_tobs_date_values)
+    return jsonify(start_end_tobs_date)
    
 if __name__ == '__main__':
     app.run(debug=True) 
