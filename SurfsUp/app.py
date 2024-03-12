@@ -36,7 +36,7 @@ app = Flask(__name__)
 #################################################
 # Create root route
 @app.route("/")
-def welcome():
+def Home():
     """List all available api routes."""
     return (
         f"Available Routes:<br/>"
@@ -56,18 +56,18 @@ def precipitation():
     """Return a list of precipitation (prcp)and date (date) data"""
     
     # Create variable to store results from query to Measurement table for prcp and date columns
-    precipitation_results = session.query(Measurement.prcp, Measurement.date).all()
+    prcp_results = session.query(Measurement.prcp, Measurement.date).all()
 
     # Close session
     session.close()
-    precipitaton_values = []
-    for prcp, date in precipitation_results:
+    prcp_values = []
+    for prcp, date in prcp_results:
         precipitation_dict = {}
         precipitation_dict["precipitation"] = prcp
         precipitation_dict["date"] = date
-        precipitaton_values.append(precipitation_dict)
+        prcp_values.append(precipitation_dict)
 
-    return jsonify(precipitaton_values) 
+    return jsonify(prcp_values) 
 # Create a route that returns a JSON list of stations from the database
 @app.route("/api/v1.0/stations")
 def station(): 
@@ -98,8 +98,7 @@ def tobs():
         order_by(Measurement.date.desc()).first() 
 
     print(last_year_results)
-    # last_year_date returns row ('2017-08-23',), use this to create a date time object to find start query date 
-    
+      
     # check to see if last year was correctly returned by creating dictionary to return last year value to browser in JSON format
     last_year_values = []
     for date in last_year_results:
