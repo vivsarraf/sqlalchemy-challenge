@@ -11,6 +11,7 @@ It consists of:
 - a SQLite database (Resources/Hawaii.sqlite)
 - a Jupyter notebook (sqlalchemy-challenge/climate_analysis.ipnyb) that uses SQLAlchemy, Python Pandas and MatPlotlib to analyze and visualize this data.
 - Bar charts, a histogram and an area chart that are visible within the notebook and also stored as .png files in the sqlalchemy-challenge folder.
+![Precipitation](https://github.com/vivsarraf/sqlalchemy-challenge/assets/135401654/351f0ea9-8e74-4592-b3d3-54487a0484b8)
 
 ## Part II: Climate App
 This part of the project surfaces several SQLAlchemy precipitation and temperature queries in an API using a Python Flask app:
